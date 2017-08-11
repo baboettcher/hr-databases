@@ -10,35 +10,61 @@ module.exports = {
           console.log("---> ERROR: ", err);
         } else {
           // if query is successful, invoke callback passing the return data
+          console.log('Data is:', data)
           callback(data);
-          console.log("---> SUCCESS! DATA: ", data);
+          //console.log("---> SUCCESS! DATA: ", data);
         }
       });
 
     }, // a function which produces all the messages
 
     post: function (username, room, message, callback) {
-      // get the id of username (done in controller)
+       //get the id of username (done in controller)
 
-      // query the user table of the database for the id that matches the username
+      //query the user table of the database for the id that matches the username
       db.query('SELECT id FROM users WHERE name=?', [username], function(err, data){
-        var userId = data[0].id;
-        console.log("USER ID:", userId, username);
-
-        var queryArgs = [userId, room, message];
-        // add the message to the database using a query
-        db.query('INSERT INTO messages (user, roomname, text) VALUES (?, ?, ?)', queryArgs, function(err){
-          if (err){
-            console.log("ERROR: ", err);
+        if (err) {
+          console.log("ERROR IN POST MODELS MESSAGE:", err);
+        } else {
+          console.log("DATA-->", data);
+          if (data.length) {
+            var userId = data[0].id;
+            var queryArgs = [userId, room, message];
+            // add the message to the database using a query
+            db.query('INSERT INTO messages (user, roomname, text) VALUES (?, ?, ?)', queryArgs, function(err){
+              if (err){
+                console.log("ERROR: ", err);
+              } else {
+                console.log("SUCCESSFULLY POSTED MESSAGE");
+                callback();
+              };
+            })
           } else {
-            console.log("SUCCESSFULLY POSTED MESSAGE");
-            callback();
-          };
-        })
+            var queryString = 'INSERT INTO users (name) VALUES ("'+ username + '")';
+            db.query(queryString, function(err){
+              if (err) {
+                console.log("---> ERROR: ", err);
+              } else {
+                console.log("---> SUCCESS!");
+                 var queryArgs = [userId, room, message];
+          // add the message to the database using a query
+                db.query('INSERT INTO messages (user, roomname, text) VALUES (?, ?, ?)', queryArgs, function(err){
+                  if (err){
+                    console.log("ERROR: ", err);
+                  } else {
+                    console.log("SUCCESSFULLY POSTED MESSAGE");
+                    callback();
+                  };
+                })
+              }
+
+            });
+          }
+         //console.log("USER ID:", userId, username);
+          //if user is not in database, add user to database
 
 
-      // invoke the callback
-
+        }
       });
 
     }// a function which can be used to insert a message into the database

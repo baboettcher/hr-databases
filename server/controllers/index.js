@@ -5,7 +5,8 @@ module.exports = {
     get: function (req, res) {
       // invoke the message's get method  on the model
       models.messages.get(function(data){
-        res.end(JSON.stringify(data));
+        var messageObj = {results: data}
+        res.end(JSON.stringify(messageObj)); // send from here!
       });
 
       // if get method is successful, end response and pass in returned data
@@ -16,7 +17,7 @@ module.exports = {
       console.log("INCOMING MESSAGE: ", req.body);
       // invoke the model's post method, and pass in the username, text, and room
       models.messages.post(req.body.username, req.body.roomname, req.body.message, function(){
-        res.end();
+        res.end(null);
       } );
       // if post method is successful, end response
 
