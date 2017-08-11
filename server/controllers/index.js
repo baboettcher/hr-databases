@@ -14,9 +14,9 @@ module.exports = {
     }, // a function which handles a get request for all messages
 
     post: function (req, res) {
-      console.log("INCOMING MESSAGE: ", req.body);
+      console.log("INCOMING MESSAGE --------->: ", req.body);
       // invoke the model's post method, and pass in the username, text, and room
-      models.messages.post(req.body.username, req.body.roomname, req.body.message, function(){
+      models.messages.post(req.body.username, req.body.roomname, req.body.text, function(){
         res.end(null);
       } );
       // if post method is successful, end response

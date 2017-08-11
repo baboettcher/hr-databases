@@ -5,12 +5,15 @@ module.exports = {
   messages: {
     get: function (callback) {
       // query the database for messages,
-      db.query('SELECT * FROM messages', function(err, data) {
+      // find the message text, message room, and name that corresponds with the user i
+      var queryString = "SELECT messages.id, roomname, text, name FROM messages, users WHERE users.id=messages.user";
+
+      db.query(queryString, function(err, data) {
         if (err) {
           console.log("---> ERROR: ", err);
         } else {
           // if query is successful, invoke callback passing the return data
-          console.log('Data is:', data)
+          console.log('Outgoing messages', data[data.length - 1])
           callback(data);
           //console.log("---> SUCCESS! DATA: ", data);
         }
@@ -19,7 +22,7 @@ module.exports = {
     }, // a function which produces all the messages
 
     post: function (username, room, message, callback) {
-       //get the id of username (done in controller)
+      //get the id of username (done in controller)
 
       //query the user table of the database for the id that matches the username
       db.query('SELECT id FROM users WHERE name=?', [username], function(err, data){
@@ -27,7 +30,9 @@ module.exports = {
           console.log("ERROR IN POST MODELS MESSAGE:", err);
         } else {
           console.log("DATA-->", data);
+          // if the user is in the database
           if (data.length) {
+            // get the ID of the user
             var userId = data[0].id;
             var queryArgs = [userId, room, message];
             // add the message to the database using a query
@@ -40,6 +45,7 @@ module.exports = {
               };
             })
           } else {
+            // if user is not in database
             var queryString = 'INSERT INTO users (name) VALUES ("'+ username + '")';
             db.query(queryString, function(err){
               if (err) {

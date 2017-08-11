@@ -30,7 +30,7 @@ app.fetch = function() {
     url: app.server,
     success: function(data) {
       data = JSON.parse(data);
-      console.log(data)
+      //console.log(data)
       app.clearMessages();
       for (let i = 0; i < data.results.length; i++) {
         let rmName = data.results[i].roomname;
@@ -40,10 +40,10 @@ app.fetch = function() {
         }
 
         let msg = {};
-        msg.username = data.results[i].username;
+        msg.username = data.results[i].name;
         msg.text = data.results[i].text;
         msg.roomname = data.results[i].roomname;
-        msg.createdAt = data.results[i].createdAt;
+        // msg.createdAt = data.results[i].createdAt;
 
         if ($('#roomSelect :selected').text().toLowerCase() === msg.roomname) {
           app.renderMessage(msg);
@@ -61,9 +61,7 @@ app.renderMessage = function(msgObj) {
   let $chatEl = $(`<div class="chat">
     <span class="username">  ${msgObj.username}</span>
     <span class="text"></span>
-    <span style="display:block;" class="room">${msgObj.roomname}</span>
-    <small style="display:block;" class="timeStamp"> ${msgObj.createdAt}</small>
-    </div>`);
+    <span style="display:block;" class="room">${msgObj.roomname}</span></div>`);
 
   $chatEl.find('.text').text(': ' + msgObj.text);
   $('#chats').append($chatEl);
